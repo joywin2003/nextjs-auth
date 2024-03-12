@@ -1,9 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
+import axios from "axios";
 
 interface FormDataInput {
   firstname: string;
@@ -14,26 +17,58 @@ interface FormDataInput {
 }
 
 export default function Signup() {
-  const [formData, setFormData] = useState<FormDataInput>({
+  const router = useRouter();
+  const [user, setUser] = useState<FormDataInput>({
     firstname: "",
     lastname: "",
     email: "",
     password: "",
     twitterpassword: "",
   });
-
+  const [buttonDisabled, setButtonDisabled] = useState<Boolean>(true);
+  const [loading, setLoading] = useState<Boolean>(false);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prevFormData) => ({
+    setUser((prevFormData) => ({
       ...prevFormData,
       [name]: value,
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("Form submitted", formData);
+  const onSignUp = async () => {
+    try {
+      console.log(1)
+      const response = await axios.post("api/users/signup", {
+        firstName: user.firstname,
+        lastName: user.lastname,
+        email: user.email,
+        password: user.password,
+      });
+      console.log(2)
+      if (response.status === 409) {
+        throw new Error("User already exists");
+      }
+      if (response.status === 201) {
+        toast.success("Sign up successful");
+        router.push("/login");
+      }
+    } catch (error: any) {
+      console.error("Signup error:", error.message);
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    const requiredFeild = Object.values(user).every((val) => Boolean(val));
+    if (requiredFeild) {
+      setButtonDisabled(false);
+    } else {
+      setButtonDisabled(true);
+    }
+  }, [user]);
+
   return (
     <div className="m-20 border-2 border-neutral-300 dark:border-neutral-700 max-w-md w-full mx-auto rounded-none md:rounded-2xl  md:p-8 shadow-input bg-white dark:bg-black">
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
@@ -43,7 +78,7 @@ export default function Signup() {
         Log in to access your account and continue your home search journey.
       </p>
 
-      <form className="my-8" onSubmit={handleSubmit}>
+      <form className="my-8" onSubmit={onSignUp}>
         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
           <LabelInputContainer>
             <Label htmlFor="firstname">First name</Label>
@@ -52,7 +87,7 @@ export default function Signup() {
               name="firstname"
               placeholder="Tyler"
               type="text"
-              value={formData.firstname}
+              value={user.firstname}
               onChange={handleChange}
             />
           </LabelInputContainer>
@@ -63,7 +98,7 @@ export default function Signup() {
               name="lastname"
               placeholder="Durden"
               type="text"
-              value={formData.lastname}
+              value={user.lastname}
               onChange={handleChange}
             />
           </LabelInputContainer>
@@ -75,7 +110,7 @@ export default function Signup() {
             name="email"
             placeholder="projectmayhem@fc.com"
             type="email"
-            value={formData.email}
+            value={user.email}
             onChange={handleChange}
           />
         </LabelInputContainer>
@@ -86,7 +121,7 @@ export default function Signup() {
             name="password"
             placeholder="••••••••"
             type="password"
-            value={formData.password}
+            value={user.password}
             onChange={handleChange}
           />
         </LabelInputContainer>
