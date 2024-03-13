@@ -5,16 +5,16 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { toast } from "react-hot-toast";
+import { toast, Toaster } from "sonner";
 import axios from "axios";
 
-interface FormDataInput {
+type FormDataInput = {
   firstname: string;
   lastname: string;
   email: string;
   password: string;
   twitterpassword: string;
-}
+};
 
 export default function Signup() {
   const router = useRouter();
@@ -25,8 +25,8 @@ export default function Signup() {
     password: "",
     twitterpassword: "",
   });
-  const [buttonDisabled, setButtonDisabled] = useState<Boolean>(true);
-  const [loading, setLoading] = useState<Boolean>(false);
+  const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUser((prevFormData) => ({
@@ -38,16 +38,20 @@ export default function Signup() {
   const onSignUp = async (e: any) => {
     e.preventDefault();
     setLoading(true);
+    const toastId = toast.loading("Loading data");
     try {
       console.log(1);
       const response = await axios.post("api/users/signup", {
         user,
       });
-      console.log(response);
-      if (response.status === 409) {
-        throw new Error("User already exists");
+      console.log(2);
+      console.log(Object.keys(response["data"]));
+      if (response.data.status === 409) {
+        toast.error("User already exists");
       }
-      if (response.status === 201) {
+      console.log(3);
+      if (response.data.status === 201) {
+        toastId && toast.dismiss(toastId);
         toast.success("Sign up successful");
         router.push("/login");
       }
@@ -55,6 +59,7 @@ export default function Signup() {
       console.error("Signup error:", error.message);
       toast.error(error.message);
     } finally {
+      toastId && toast.dismiss(toastId);
       setLoading(false);
     }
   };
@@ -70,6 +75,7 @@ export default function Signup() {
 
   return (
     <div className="m-20 border-2 border-neutral-300 dark:border-neutral-700 max-w-md w-full mx-auto rounded-none md:rounded-2xl  md:p-8 shadow-input bg-white dark:bg-black">
+      <Toaster />
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
         Welcome back to Here Or There Homes
       </h2>
@@ -138,7 +144,7 @@ export default function Signup() {
           type="submit"
         >
           Sign up &rarr;
-          <BottomGradient />
+           <BottomGradient />
         </button>
         <p className="text-neutral-600 text-sm mt-2 dark:text-neutral-300">
           Have an account?,{" "}

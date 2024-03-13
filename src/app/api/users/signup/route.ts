@@ -3,11 +3,18 @@ import User from "@/models/userModel";
 import { NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 
+type connnection = Boolean;
+let isConnectionEstablished: connnection = false;
 
 
 export async function POST(request: NextResponse) {
-  await connect();
-  try {
+  {try {
+    if (!isConnectionEstablished) {
+      await connect();
+      isConnectionEstablished = true;
+    }else{
+      console.log("Connection already established");
+    }
     const body = await request.json();
     const { email, password, firstname, lastname } = body.user;
     console.log(body);
@@ -52,5 +59,5 @@ export async function POST(request: NextResponse) {
       error: "Something went wrong",
       status: 500,
     });
-  }
+  }}
 }
