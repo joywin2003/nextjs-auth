@@ -3,14 +3,17 @@ import User from "@/models/userModel";
 import { NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 
-connect();
+
 
 export async function POST(request: NextResponse) {
+  await connect();
   try {
     const body = await request.json();
-    const { email, password, firstname, lastname } = body;
+    const { email, password, firstname, lastname } = body.user;
+    console.log(body);
+    console.log(email, password, firstname, lastname);
 
-    if (body && Object.values(body).every((val) => Boolean(val))) {
+    if (body && Object.values(body.user).every((val) => Boolean(val))) {
       return NextResponse.json({
         status: 400,
         error: "Missing required fields",
@@ -29,10 +32,10 @@ export async function POST(request: NextResponse) {
     const hashedPassword = await bcryptjs.hash(password, salt);
 
     const savedUser = await new User({
-      email,
+      email: email,
       password: hashedPassword,
-      firstname,
-      lastname,
+      firstName: firstname,
+      lastName: lastname,
     }).save();
 
     console.log("User created successfully:", savedUser);

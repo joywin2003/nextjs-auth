@@ -35,16 +35,15 @@ export default function Signup() {
     }));
   };
 
-  const onSignUp = async () => {
+  const onSignUp = async (e: any) => {
+    e.preventDefault();
+    setLoading(true);
     try {
-      console.log(1)
+      console.log(1);
       const response = await axios.post("api/users/signup", {
-        firstName: user.firstname,
-        lastName: user.lastname,
-        email: user.email,
-        password: user.password,
+        user,
       });
-      console.log(2)
+      console.log(response);
       if (response.status === 409) {
         throw new Error("User already exists");
       }
