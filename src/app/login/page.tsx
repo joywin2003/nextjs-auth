@@ -5,8 +5,10 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/utils/cn";
 import Link from "next/link";
+import axios from "axios";
+import { toast, Toaster } from "sonner";
 
-interface FormDataInput {
+type FormDataInput = {
   email: string;
   password: string;
 }
@@ -25,26 +27,46 @@ export default function Login() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onLogin = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Form submitted");
+    const toastId = toast.loading("Loading data");
+    try{
+      console.log(1);
+      const response = await axios.post("/api/users/login", formData);
+      console.log(2);
+      console.log(response);
+      if (response.data.status === 200) {
+        console.log("Login successful");
+        toastId && toast.dismiss(toastId);
+        toast.success("Login successful");
+      }else{
+        toast.error(response.data.error);
+        toastId && toast.dismiss(toastId);
+      }
+    }catch(error: any){
+      console.log("Login failed",error.message);
+      toast.error(error.message);
+    }
   };
 
   return (
     <div className="m-20 border-2 border-neutral-300 dark:border-neutral-700 max-w-md w-full mx-auto rounded-none md:rounded-2xl  md:p-8 shadow-input bg-white dark:bg-black">
+      <Toaster />
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
         Welcome back to Here Or There Homes
       </h2>
       <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
         Log in to access your account and continue your home search journey.
       </p>
-      <form className="my-8" onSubmit={handleSubmit}>
+      <form className="my-8" onSubmit={onLogin}>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="email">Email Address</Label>
           <Input
             id="email"
             placeholder="projectmayhem@fc.com"
             type="email"
+            name="email"
             value={formData.email}
             onChange={handleChange}
           />
@@ -55,6 +77,7 @@ export default function Login() {
             id="password"
             placeholder="••••••••"
             type="password"
+            name="password"
             value={formData.password}
             onChange={handleChange}
           />

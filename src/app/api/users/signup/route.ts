@@ -6,15 +6,17 @@ import bcryptjs from "bcryptjs";
 type connnection = Boolean;
 let isConnectionEstablished: connnection = false;
 
+connect();
+
 
 export async function POST(request: NextResponse) {
   {try {
-    if (!isConnectionEstablished) {
-      await connect();
-      isConnectionEstablished = true;
-    }else{
-      console.log("Connection already established");
-    }
+    // if (!isConnectionEstablished) {
+    //   await connect();
+    //   isConnectionEstablished = true;
+    // }else{
+    //   console.log("Connection already established");
+    // }
     const body = await request.json();
     const { email, password, firstname, lastname } = body.user;
     console.log(body);
