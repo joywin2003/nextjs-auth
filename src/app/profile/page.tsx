@@ -29,12 +29,22 @@ export default function ProfilePage() {
     }
   };
 
+  const resetPassword = async () => {
+    try {
+      const response = await axios.post("/api/users/resetpassword",);
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error resetting password:", error);
+    }
+  }
+
   return (
     <div>
       <Toaster />
       <div>Profile page</div>
       <button onClick={onLogout}>Logout</button>
       <button onClick={getUserInfo}>Get user info</button>
+      <button onClick={resetPassword}>Reset password</button>
       <h2 className="p-1 rounded bg-green-500">
         {data === "nothing" ? (
           ""
