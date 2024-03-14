@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { toast, Toaster } from "sonner";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { set } from "mongoose";
 import Link from "next/link";
 
 export default function ProfilePage() {

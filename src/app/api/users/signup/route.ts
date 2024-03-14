@@ -2,6 +2,8 @@ import { connect } from "@/dbConfig/dbConfig";
 import User from "@/models/userModel";
 import { NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
+import { sendEmail } from "@/utils/mailer";
+import { send } from "process";
 
 type connnection = Boolean;
 let isConnectionEstablished: connnection = false;
@@ -48,6 +50,8 @@ export async function POST(request: NextResponse) {
     }).save();
 
     console.log("User created successfully:", savedUser);
+
+    sendEmail("VERIFY", email, savedUser._id);
 
     return NextResponse.json({
       message: "User created successfully",
