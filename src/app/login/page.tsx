@@ -7,6 +7,7 @@ import { cn } from "@/utils/cn";
 import Link from "next/link";
 import axios from "axios";
 import { toast, Toaster } from "sonner";
+import { useRouter } from "next/navigation";
 
 type FormDataInput = {
   email: string;
@@ -19,6 +20,8 @@ export default function Login() {
     password: "",
   });
 
+  const router = useRouter();
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
@@ -30,7 +33,7 @@ export default function Login() {
   const onLogin = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log("Form submitted");
-    const toastId = toast.loading("Loading data");
+    const toastId = toast.loading("Logging In");
     try{
       console.log(1);
       const response = await axios.post("/api/users/login", formData);
@@ -40,6 +43,10 @@ export default function Login() {
         console.log("Login successful");
         toastId && toast.dismiss(toastId);
         toast.success("Login successful");
+        setTimeout(() => {
+          router.push("/");
+        }, 2000);
+
       }else{
         toast.error(response.data.error);
         toastId && toast.dismiss(toastId);
