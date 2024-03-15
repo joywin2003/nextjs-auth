@@ -52,7 +52,7 @@ export default function resetPassword() {
   return (
     <div>
       <div className="m-20 border-2 border-neutral-300 dark:border-neutral-700 max-w-md w-full mx-auto rounded-none md:rounded-2xl  md:p-8 shadow-input bg-white dark:bg-black">
-        <Toaster />
+      <Toaster position="top-center" />
         <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
           Add a new password
         </h2>

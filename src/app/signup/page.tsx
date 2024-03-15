@@ -14,7 +14,6 @@ type FormDataInput = {
   lastname: string;
   email: string;
   password: string;
-  twitterpassword: string;
 };
 
 export default function Signup() {
@@ -24,7 +23,6 @@ export default function Signup() {
     lastname: "",
     email: "",
     password: "",
-    twitterpassword: "",
   });
   const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
@@ -76,7 +74,7 @@ export default function Signup() {
 
   return (
     <div className="m-20 border-2 border-neutral-300 dark:border-neutral-700 max-w-md w-full mx-auto rounded-none md:rounded-2xl  md:p-8 shadow-input bg-white dark:bg-black">
-      <Toaster />
+      <Toaster position="top-center" />
       <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
         Welcome back to Here Or There Homes
       </h2>
@@ -131,15 +129,6 @@ export default function Signup() {
             onChange={handleChange}
           />
         </LabelInputContainer>
-        <LabelInputContainer className="mb-8">
-          <Label htmlFor="twitterpassword">Re-enter Password</Label>
-          <Input
-            id="twitterpassword"
-            placeholder="••••••••"
-            type="twitterpassword"
-          />
-        </LabelInputContainer>
-
         <button
           className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
           type="submit"
