@@ -33,8 +33,11 @@ export default function ProfilePage() {
     try {
       const response = await axios.post("/api/users/resetpassword",);
       console.log(response.data);
-    } catch (error) {
-      console.error("Error resetting password:", error);
+      if (response.data.success === true) {
+        toast.success("Password reset successful");
+      }
+    } catch (error:any) {
+      toast.error("Error resetting password:", error);
     }
   }
 

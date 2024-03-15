@@ -4,58 +4,55 @@ import axios from "axios";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
-
 export default function VerifyEmailPage() {
+  const [token, setToken] = useState("");
+  const [verified, setVerified] = useState(false);
+  const [error, setError] = useState(false);
 
-    const [token, setToken] = useState("");
-    const [verified, setVerified] = useState(false);
-    const [error, setError] = useState(false);
-
-    const verifyUserEmail = async () => {
-        try {
-            await axios.post('/api/users/verifyemail', {token})
-            setVerified(true);
-        } catch (error:any) {
-            setError(true);
-            console.log(error.reponse.data);
-            
-        }
-
+  const verifyUserEmail = async () => {
+    try {
+      await axios.post("/api/users/verifyemail", { token });
+      setVerified(true);
+    } catch (error: any) {
+      setError(true);
+      console.log(error.reponse.data);
     }
+  };
 
-    useEffect(() => {
-        const urlToken = window.location.search.split("=")[1];
-        setToken(urlToken || "");
-    }, []);
+  useEffect(() => {
+    const urlToken = window.location.search.split("=")[1];
+    setToken(urlToken || "");
+  }, []);
 
+  useEffect(() => {
+    if (token.length > 0) {
+      verifyUserEmail();
+    }
+  }, [token]);
 
-    useEffect(() => {
-        if(token.length > 0) {
-            verifyUserEmail();
-        }
-    }, [token]);
-
-    return(
-        <div className="flex flex-col items-center justify-center min-h-screen py-2">
-
-            <h1 className="text-4xl">Verify Email</h1>
-            <h2 className="p-2 bg-orange-500 text-black">{token ? `${token}` : "no token"}</h2>
-
-            {verified && (
-                <div>
-                    <h2 className="text-2xl">Email Verified</h2>
-                    <Link href="/login">
-                        Login
-                    </Link>
-                </div>
-            )}
-            {error && (
-                <div>
-                    <h2 className="text-2xl bg-red-500 text-black">Error</h2>
-                    
-                </div>
-            )}
+  return (
+    <div className="m-20 border-2 border-neutral-300 dark:border-neutral-700 max-w-md w-full mx-auto rounded-none md:rounded-2xl md:p-8 shadow-input bg-white dark:bg-black">
+      <h1 className="text-4xl text-center mb-8">Email Verification</h1>
+      {verified ? (
+        <div className="text-center">
+          <h2 className="text-2xl mb-4">
+            Your email has been successfully verified!
+          </h2>
+          <p className="text-lg mb-8">You can now proceed to login.</p>
+          <button className="shadow-[0_0_0_3px_#000000_inset] px-6 py-2 bg-transparent border border-black dark:border-white dark:text-white text-black rounded-lg font-bold transform hover:-translate-y-1 transition duration-400">
+          <Link href="/login">Login</Link>
+          </button>
         </div>
-    )
-
+      ) : (
+        <div className="text-center">
+          <h2 className="text-2xl bg-red-500 text-white rounded-lg py-4">
+            Error
+          </h2>
+          <p className="text-lg mt-4">
+            There was an error verifying your email. Please try again later.
+          </p>
+        </div>
+      )}
+    </div>
+  );
 }
