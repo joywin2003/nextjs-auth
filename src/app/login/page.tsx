@@ -3,13 +3,13 @@
 import React, { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/utils/cn";
 import Link from "next/link";
 import axios from "axios";
 import { toast, Toaster } from "sonner";
 import { useRouter } from "next/navigation";
 import LabelInputContainer from "@/components/ui/lableinputcontainer";
 import BottomGradient from "@/components/ui/buttongradient";
+import getErrorMessage from "@/utils/getErrorMessage";
 
 type FormDataInput = {
   email: string;
@@ -50,12 +50,15 @@ export default function Login() {
         }, 2000);
 
       }else{
-        toast.error(response.data.error);
+        console.log("Login failed",response.data.message);
+        toast.error(response.data.message);
         toastId && toast.dismiss(toastId);
       }
-    }catch(error: any){
-      console.log("Login failed",error.message);
-      toast.error(error.message);
+    }catch(error: unknown){
+      const errorMessage = getErrorMessage(error);
+      console.log("Login failed",errorMessage);
+      toastId && toast.dismiss(toastId);
+      toast.error(errorMessage);
     }
   };
 

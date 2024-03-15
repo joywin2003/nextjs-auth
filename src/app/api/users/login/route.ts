@@ -3,6 +3,8 @@ import User from "@/models/userModel";
 import { NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
+import getErrorMessage from "@/utils/getErrorMessage";
+import { get } from "http";
 
 type connnection = Boolean;
 let isConnectionEstablished: connnection = false;
@@ -27,7 +29,7 @@ export async function POST(request: NextResponse) {
     if (!email|| !password) {
       return NextResponse.json({
         status: 400,
-        error: "Missing required fields",
+        message: "Missing required fields",
       });
     }
 
@@ -36,7 +38,7 @@ export async function POST(request: NextResponse) {
     if (!existingUser) {
       return NextResponse.json({
         status: 404,
-        error: "User not found",
+        message: "User not found",
       });
     }
 
@@ -47,7 +49,7 @@ export async function POST(request: NextResponse) {
     if (!isPasswordCorrect) {
       return NextResponse.json({
         status: 401,
-        error: "Invalid credentials",
+        message: "Invalid credentials",
       });
     }
 
@@ -65,10 +67,10 @@ export async function POST(request: NextResponse) {
     response.cookies.set("token", token, { httpOnly: true });
 
     return response;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error creating user:", error);
     return NextResponse.json({
-      error: "Something went wrong",
+      message: getErrorMessage(error),
       status: 500,
     });
   }

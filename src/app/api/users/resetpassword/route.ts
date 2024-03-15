@@ -3,6 +3,7 @@ import User from "@/models/userModel";
 import { NextRequest, NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import getDataFromToken from "@/helpers/getDataFromToken";
+import getErrorMessage from "@/utils/getErrorMessage";
 import { sendEmail } from "@/helpers/mailer";
 
 connect();
@@ -41,7 +42,7 @@ export const PATCH = async (req: NextRequest) => {
     if (!user) {
       return NextResponse.json({
         status: 400,
-        error: "Invalid token",
+        message: "Invalid token",
       });
     }
 
@@ -54,7 +55,7 @@ export const PATCH = async (req: NextRequest) => {
       message: "Password changed successfully",
       success: true,
     });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    return NextResponse.json({message:getErrorMessage(error)}, { status: 500 });
   }
 };

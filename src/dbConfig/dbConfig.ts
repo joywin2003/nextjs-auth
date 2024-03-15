@@ -1,3 +1,5 @@
+import getErrorMessage from '@/utils/getErrorMessage';
+import { get } from 'http';
 import mongoose from 'mongoose';
 
 export async function connect() {
@@ -14,9 +16,9 @@ export async function connect() {
             process.exit();
         })
 
-    } catch (error) {
+    } catch (error:unknown) {
         console.log('Something goes wrong!');
-        console.log(error);
+        return new Error(getErrorMessage(error));
         
     }
 

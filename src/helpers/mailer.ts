@@ -1,6 +1,8 @@
 import nodemailer from "nodemailer";
 import User from "@/models/userModel";
 import bcryptjs from "bcryptjs";
+import { get } from "http";
+import getErrorMessage from "@/utils/getErrorMessage";
 
 export async function sendEmail(
   emailType: string,
@@ -53,7 +55,7 @@ export async function sendEmail(
 
     const mailResponse = await transport.sendMail(mailOptions);
     return mailResponse;
-  } catch (error: any) {
-    throw new Error(error.message);
+  } catch (error: unknown) {
+    throw new Error(getErrorMessage(error));
   }
 }

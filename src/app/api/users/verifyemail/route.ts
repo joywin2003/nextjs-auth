@@ -1,6 +1,7 @@
 import {connect} from "@/dbConfig/dbConfig";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/userModel";
+import getErrorMessage from "@/utils/getErrorMessage";
 
 
 
@@ -34,8 +35,8 @@ export async function POST(request: NextRequest){
         })
 
 
-    } catch (error:any) {
-        return NextResponse.json({error: error.message}, {status: 500})
+    } catch (error:unknown) {
+        return NextResponse.json({message:getErrorMessage(error)}, {status: 500})
     }
 
 }

@@ -4,6 +4,8 @@ import { NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import { sendEmail } from "@/helpers/mailer";
 import { send } from "process";
+import { get } from "http";
+import getErrorMessage from "@/utils/getErrorMessage";
 
 type connnection = Boolean;
 let isConnectionEstablished: connnection = false;
@@ -24,10 +26,10 @@ export async function POST(request: NextResponse) {
     console.log(body);
     console.log(email, password, firstname, lastname);
 
-    if (body && Object.values(body.user).every((val) => Boolean(val))) {
+    if (!email || !password || !firstname || !lastname) {
       return NextResponse.json({
         status: 400,
-        error: "Missing required fields",
+        message: "Missing required fields",
       });
     }
 
@@ -35,7 +37,7 @@ export async function POST(request: NextResponse) {
     if (existingUser) {
       return NextResponse.json({
         status: 409,
-        error: "User already exists",
+        message: "User already exists",
       });
     }
 
@@ -59,10 +61,10 @@ export async function POST(request: NextResponse) {
       success: true,
       savedUser: savedUser,
     });
-  } catch (error) {
+  } catch (error:unknown) {
     console.error("Error creating user:", error);
     return NextResponse.json({
-      error: "Something went wrong",
+      message: getErrorMessage(error),
       status: 500,
     });
   }}

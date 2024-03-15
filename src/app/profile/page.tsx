@@ -23,7 +23,7 @@ export default function ProfilePage() {
       setTimeout(() => {
         router.push("/login");
       }, 2000);
-    } catch (error) {
+    } catch (error:unknown) {
       console.error("Error during logout:", error);
       toast.error("Failed to logout. Please try again.");
     }
@@ -34,7 +34,7 @@ export default function ProfilePage() {
       const response = await axios.get("/api/users/user");
       console.log(response.data.user.firstName);
       setUserInfo(response.data.user);
-    } catch (error) {
+    } catch (error:unknown) {
       console.error("Error getting user info:", error);
       toast.error("Failed to fetch user info. Please try again.");
     }
@@ -49,7 +49,7 @@ export default function ProfilePage() {
       } else {
         toast.error("Password reset failed. Please try again.");
       }
-    } catch (error) {
+    } catch (error:unknown) {
       console.error("Error resetting password:", error);
       toast.error("Failed to reset password. Please try again.");
     }

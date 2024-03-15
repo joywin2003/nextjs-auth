@@ -8,6 +8,7 @@ import { toast, Toaster } from "sonner";
 import axios from "axios";
 import LabelInputContainer from "@/components/ui/lableinputcontainer";
 import BottomGradient from "@/components/ui/buttongradient";
+import getErrorMessage from "@/utils/getErrorMessage";
 
 type FormDataInput = {
   firstname: string;
@@ -39,37 +40,38 @@ export default function Signup() {
     setLoading(true);
     const toastId = toast.loading("Loading data");
     try {
-      console.log(1);
       const response = await axios.post("api/users/signup", {
         user,
       });
-      console.log(2);
-      console.log(Object.keys(response["data"]));
-      if (response.data.status === 409) {
-        toast.error("User already exists");
-      }
-      console.log(3);
+      console.log(response["data"]);
       if (response.data.status === 201) {
         toastId && toast.dismiss(toastId);
         toast.success("Sign up successful");
-        router.push("/login");
+        setTimeout(() => {
+          router.push("/login");
+        }, 2000);
+      } else {
+        toast.error(response.data.message);
+        toastId && toast.dismiss(toastId);
       }
-    } catch (error: any) {
-      console.error("Signup error:", error.message);
-      toast.error(error.message);
+    } catch (error: unknown) {
+      const errorMessage = getErrorMessage(error);
+      console.error("Signup error:", errorMessage);
+      toast.error(errorMessage);
     } finally {
-      toastId && toast.dismiss(toastId);
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    const requiredFeild = Object.values(user).every((val) => Boolean(val));
-    if (requiredFeild) {
-      setButtonDisabled(false);
-    } else {
-      setButtonDisabled(true);
-    }
+    const requiredFields = [
+      user.firstname,
+      user.lastname,
+      user.email,
+      user.password,
+    ];
+    const buttonDisabled = !requiredFields.every((field) => field);
+    setButtonDisabled(buttonDisabled);
   }, [user]);
 
   return (
@@ -134,7 +136,7 @@ export default function Signup() {
           type="submit"
         >
           Sign up &rarr;
-           <BottomGradient />
+          <BottomGradient />
         </button>
         <p className="text-neutral-600 text-sm mt-2 dark:text-neutral-300">
           Have an account?,{" "}
@@ -146,4 +148,3 @@ export default function Signup() {
     </div>
   );
 }
-

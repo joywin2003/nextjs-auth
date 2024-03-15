@@ -37,7 +37,7 @@ export default function resetPassword() {
       const response = await axios.patch("/api/users/resetpassword", {password:formData.password, token});
       console.log(response.data);
       router.push("/");
-    } catch (error) {
+    } catch (error:unknown) {
       console.error("Error resetting password:", error);
     }
   };

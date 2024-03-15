@@ -1,6 +1,8 @@
 "use client";
 
+import getErrorMessage from "@/utils/getErrorMessage";
 import axios from "axios";
+import { get } from "http";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
@@ -13,9 +15,9 @@ export default function VerifyEmailPage() {
     try {
       await axios.post("/api/users/verifyemail", { token });
       setVerified(true);
-    } catch (error: any) {
+    } catch (error: unknown) {
       setError(true);
-      console.log(error.reponse.data);
+      console.log(getErrorMessage(error));
     }
   };
 
