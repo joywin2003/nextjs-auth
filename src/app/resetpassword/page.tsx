@@ -34,10 +34,10 @@ export default function resetPassword() {
         token,
       });
       console.log(response.data);
+      toast.dismiss(toastId);
+      toast.success("Password reset successful");
       await new Promise<void>((resolve) =>
         setTimeout(() => {
-          toast.dismiss(toastId);
-          toast.success("Password reset successful");
           router.push("/");
           resolve();
         }, 2000)
