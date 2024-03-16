@@ -3,8 +3,6 @@ import User from "@/models/userModel";
 import { NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import { sendEmail } from "@/helpers/mailer";
-import { send } from "process";
-import { get } from "http";
 import getErrorMessage from "@/utils/getErrorMessage";
 
 type connnection = Boolean;
