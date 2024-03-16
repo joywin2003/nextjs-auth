@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
+import React, { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
@@ -22,34 +23,34 @@ export default function Signup() {
   } = useForm<TSignupSchema>({
     resolver: zodResolver(signupSchema),
   });
-  const [loading, setLoading] = useState<boolean>(false);
+  const [response, setResponse] = useState<any>(null);
 
   const onSignUp = async (user: TSignupSchema) => {
-    setLoading(true);
     const toastId = toast.loading("Loading data");
     try {
       const response = await axios.post("api/users/signup", {
         user,
       });
-      console.log(response["data"]);
-      if (response.data.status === 201) {
-        toastId && toast.dismiss(toastId);
-        toast.success("Sign up successful");
-        setTimeout(() => {
-          router.push("/login");
-        }, 2000);
-      } else {
-        toast.error(response.data.message);
-        toastId && toast.dismiss(toastId);
-      }
+      setResponse(response.data);
     } catch (error: unknown) {
       const errorMessage = getErrorMessage(error);
       console.error("Signup error:", errorMessage);
       toast.error(errorMessage);
     } finally {
-      setLoading(false);
+      toastId && toast.dismiss(toastId);
     }
   };
+
+  useEffect(() => {
+    if (response && response.status === 201) {
+      toast.success("Sign up successful");
+      setTimeout(() => {
+        router.push("/login");
+      }, 2000);
+    } else if (response && response.message) {
+      toast.error(response.message);
+    }
+  }, [response]);
 
   return (
     <div className="m-20 border-2 border-neutral-300 dark:border-neutral-700 max-w-md w-full mx-auto rounded-none md:rounded-2xl  md:p-8 shadow-input bg-white dark:bg-black">
@@ -115,6 +116,7 @@ export default function Signup() {
         <button
           className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
           type="submit"
+          disabled={isSubmitting}
         >
           Sign up &rarr;
           <BottomGradient />
