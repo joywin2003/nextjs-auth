@@ -10,7 +10,6 @@ const getErrorMessage = (error: unknown): string => {
   } else {
     message = "Something went wrong";
   }
-
   return message;
 };
 

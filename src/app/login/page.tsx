@@ -15,6 +15,7 @@ import BottomGradient from "@/components/ui/buttongradient";
 
 import getErrorMessage from "@/utils/getErrorMessage";
 import { loginSchema, TLoginSchema } from "@/utils/types";
+import {handleMyFormSubmit }from "../api/users/login/actions";
 
 
 export default function Login() {
@@ -31,10 +32,11 @@ export default function Login() {
   const onLogin = async (data: TLoginSchema) => {
     try {
       const toastId = toast.loading("Logging In");
-      const response = await axios.post("/api/users/login", data);
+      const response = await handleMyFormSubmit(data);
+      console.log(response);
       toastId && toast.dismiss(toastId);
 
-      if (response.data.status === 200) {
+      if (response.status === 200) {
         toast.success("Login successful");
         await new Promise<void>((resolve) =>
           setTimeout(() => {
@@ -43,7 +45,7 @@ export default function Login() {
           }, 2000)
         );
       } else {
-        toast.error(response.data.message);
+        toast.error(response.message);
       }
       
     } catch (error: unknown) {
@@ -89,6 +91,7 @@ export default function Login() {
         <button
           className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
           type="submit"
+          disabled={isSubmitting}
         >
           Login &rarr;
           <BottomGradient />
