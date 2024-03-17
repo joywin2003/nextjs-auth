@@ -13,6 +13,7 @@ import getErrorMessage from "@/utils/getErrorMessage";
 import { signupSchema, TSignupSchema } from "@/utils/types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { SignUpSubmitAction } from "../api/users/signup/actions";
 
 export default function Signup() {
   const router = useRouter();
@@ -23,34 +24,23 @@ export default function Signup() {
   } = useForm<TSignupSchema>({
     resolver: zodResolver(signupSchema),
   });
-  const [response, setResponse] = useState<any>(null);
 
   const onSignUp = async (user: TSignupSchema) => {
     const toastId = toast.loading("Loading data");
     try {
-      const response = await axios.post("api/users/signup", {
-        user,
-      });
-      setResponse(response.data);
+      const response = await SignUpSubmitAction(user);
+      toastId && toast.dismiss(toastId);
+      if (response.status === 201) {
+        toast.success("Sign up successful");
+        setTimeout(() => {
+          router.push("/login");
+        }, 2000);
+      }
     } catch (error: unknown) {
       const errorMessage = getErrorMessage(error);
-      console.error("Signup error:", errorMessage);
       toast.error(errorMessage);
-    } finally {
-      toastId && toast.dismiss(toastId);
     }
   };
-
-  useEffect(() => {
-    if (response && response.status === 201) {
-      toast.success("Sign up successful");
-      setTimeout(() => {
-        router.push("/login");
-      }, 2000);
-    } else if (response && response.message) {
-      toast.error(response.message);
-    }
-  }, [response]);
 
   return (
     <div className="m-20 border-2 border-neutral-300 dark:border-neutral-700 max-w-md w-full mx-auto rounded-none md:rounded-2xl  md:p-8 shadow-input bg-white dark:bg-black">
@@ -70,6 +60,7 @@ export default function Signup() {
               id="firstname"
               placeholder="Tyler"
               type="text"
+              autoComplete="firstname"
               {...register("firstname")}
             />
             {errors.firstname && (
@@ -82,6 +73,7 @@ export default function Signup() {
               id="lastname"
               placeholder="Durden"
               type="text"
+              autoComplete="lastname"
               {...register("lastname")}
             />
             {errors.lastname && (
@@ -95,6 +87,7 @@ export default function Signup() {
             id="email"
             placeholder="Enter a email address"
             type="email"
+            autoComplete="email"
             {...register("email")}
           />
           {errors.email && (
@@ -107,6 +100,7 @@ export default function Signup() {
             id="password"
             placeholder="Enter a password"
             type="password"
+            autoComplete="password"
             {...register("password")}
           />
           {errors.password && (

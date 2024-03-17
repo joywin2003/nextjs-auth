@@ -1,3 +1,5 @@
+"use server";
+
 import { connect } from "@/dbConfig/dbConfig";
 import User from "@/models/userModel";
 import bcryptjs from "bcryptjs";
@@ -5,21 +7,24 @@ import { sendEmail } from "@/helpers/mailer";
 import getErrorMessage from "@/utils/getErrorMessage";
 import { TSignupSchema, signupSchema } from "@/utils/types";
 
+
 connect();
 
 export async function SignUpSubmitAction(data: TSignupSchema) {
   try {
-    const validatedFields = signupSchema.safeParse({
-      data,
-    });
+    console.log(data);
+    const validatedFields = signupSchema.safeParse(data);
     
     if (!validatedFields.success) {
-        return {
-          message: validatedFields.error.message,
-        }
+      console.log(validatedFields.error)
+      return {
+        message: validatedFields.error.message,
       }
+    }
+
 
     const { email, password, firstname, lastname } = data;
+    console.log(email, password, firstname, lastname);
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -47,7 +52,6 @@ export async function SignUpSubmitAction(data: TSignupSchema) {
       message: "User created successfully",
       status: 201,
       success: true,
-      savedUser: savedUser,
     };
   } catch (error: unknown) {
     console.error("Error creating user:", error);

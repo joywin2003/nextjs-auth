@@ -9,6 +9,7 @@ import User from "@/models/userModel";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import getErrorMessage from "@/utils/getErrorMessage";
+import { sendEmail } from "@/helpers/mailer";
 
 
 connect();
@@ -50,7 +51,7 @@ export async function LoginSubmitAction(data: TLoginSchema) {
       process.env.TOKEN_SECRET!,
       { expiresIn: "1d" }
     );
-
+    
     const response = {
         status: 200,
       message: "User succesfully logged In",
