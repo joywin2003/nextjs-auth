@@ -1,12 +1,7 @@
 "use server";
 
-import { TLoginSchema } from "@/utils/types";
-
-// export async function handleMyFormSubmit(data: TLoginSchema) {
-//   console.log(data.email, data.password + "login");
-  
-// }
-
+import { TLoginSchema,loginSchema } from "@/utils/types";
+import { revalidatePath } from 'next/cache'
 import { cookies } from 'next/headers'
 
 import { connect } from "@/dbConfig/dbConfig";
@@ -21,13 +16,13 @@ connect();
 export async function handleMyFormSubmit(data: TLoginSchema) {
   try {
     const { email, password } = data;
+    const validatedFields = loginSchema.safeParse(data);
     console.log(email, password)
     
-    if (!email|| !password) {
+    if (!validatedFields.success) {
       return {
-        status: 400,
-        message: "Missing required fields",
-      };
+        message: validatedFields.error.message,
+      }
     }
 
     const existingUser = await User.findOne({ email });
@@ -63,6 +58,7 @@ export async function handleMyFormSubmit(data: TLoginSchema) {
     };
     cookies().set("token", token, { httpOnly: true });
 
+    revalidatePath('/login')
     return response;
   } catch (error: unknown) {
     console.error("Error creating user:", error);
