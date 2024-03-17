@@ -1,34 +1,32 @@
 import { connect } from "@/dbConfig/dbConfig";
 import User from "@/models/userModel";
-import { NextResponse } from "next/server";
 import bcryptjs from "bcryptjs";
 import { sendEmail } from "@/helpers/mailer";
 import getErrorMessage from "@/utils/getErrorMessage";
-
+import { TSignupSchema, signupSchema } from "@/utils/types";
 
 connect();
 
-
-export async function POST(request: NextResponse) {
+export async function SignUpSubmitAction(data: TSignupSchema) {
   try {
-    const body = await request.json();
-    const { email, password, firstname, lastname } = body.user;
-    console.log(body);
-    console.log(email, password, firstname, lastname);
+    const validatedFields = signupSchema.safeParse({
+      data,
+    });
+    
+    if (!validatedFields.success) {
+        return {
+          message: validatedFields.error.message,
+        }
+      }
 
-    if (!email || !password || !firstname || !lastname) {
-      return NextResponse.json({
-        status: 400,
-        message: "Missing required fields",
-      });
-    }
+    const { email, password, firstname, lastname } = data;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return NextResponse.json({
+      return {
         status: 409,
         message: "User already exists",
-      });
+      };
     }
 
     const salt = await bcryptjs.genSalt(10);
@@ -44,18 +42,18 @@ export async function POST(request: NextResponse) {
     console.log("User created successfully:", savedUser);
 
     sendEmail("VERIFY", email, savedUser._id);
-
-    return NextResponse.json({
+    
+    return {
       message: "User created successfully",
       status: 201,
       success: true,
       savedUser: savedUser,
-    });
-  } catch (error:unknown) {
+    };
+  } catch (error: unknown) {
     console.error("Error creating user:", error);
-    return NextResponse.json({
+    return {
       message: getErrorMessage(error),
       status: 500,
-    });
+    };
   }
 }

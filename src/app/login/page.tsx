@@ -15,7 +15,7 @@ import BottomGradient from "@/components/ui/buttongradient";
 
 import getErrorMessage from "@/utils/getErrorMessage";
 import { loginSchema, TLoginSchema } from "@/utils/types";
-import {handleMyFormSubmit }from "../api/users/login/actions";
+import {LoginSubmitAction }from "../api/users/login/actions";
 
 
 export default function Login() {
@@ -32,7 +32,7 @@ export default function Login() {
   const onLogin = async (data: TLoginSchema) => {
     try {
       const toastId = toast.loading("Logging In");
-      const response = await handleMyFormSubmit(data);
+      const response = await LoginSubmitAction(data);
       console.log(response);
       toastId && toast.dismiss(toastId);
 

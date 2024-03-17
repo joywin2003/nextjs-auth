@@ -13,7 +13,7 @@ import getErrorMessage from "@/utils/getErrorMessage";
 
 connect();
 
-export async function handleMyFormSubmit(data: TLoginSchema) {
+export async function LoginSubmitAction(data: TLoginSchema) {
   try {
     const { email, password } = data;
     const validatedFields = loginSchema.safeParse(data);
